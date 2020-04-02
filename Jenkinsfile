@@ -29,7 +29,7 @@ def buildSecretName(String jobNameWithNamespace, String namespace) {
 }
 
 def secretName = buildSecretName(env.JOB_NAME, env.NAMESPACE)
-println "Job name: ${env.JOB_NAME}"
+println "Job name IS : ${env.JOB_NAME}"
 println "Secret name: ${secretName}"
 
 def buildLabel = buildAgentName(env.JOB_NAME, env.BUILD_NUMBER, env.NAMESPACE);
