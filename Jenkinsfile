@@ -30,7 +30,7 @@ def buildSecretName(String jobNameWithNamespace, String namespace) {
 
 def secretName = buildSecretName(env.JOB_NAME, env.NAMESPACE)
 println "Job name IS : ${env.JOB_NAME}"
-println "Secret name: ${secretName}"
+println "Secret name is : ${secretName}"
 
 def buildLabel = buildAgentName(env.JOB_NAME, env.BUILD_NUMBER, env.NAMESPACE);
 def branch = env.BRANCH ?: "master"
