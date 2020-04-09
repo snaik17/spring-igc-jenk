@@ -96,6 +96,18 @@ spec:
             secretKeyRef:
               name: ${secretName}
               key: password
+    - name: trivy
+      image: docker.io/aquasec/trivy
+      tty: true
+      command: ["/bin/sh"]
+      workingDir: ${workingDir}
+      env:
+        - name: HOME
+          value: /home/devops
+        - name: ENVIRONMENT_NAME
+          value: ${namespace}
+        - name: BUILD_NUMBER
+          value: ${env.BUILD_NUMBER}             
     - name: ibmcloud
       image: docker.io/garagecatalyst/ibmcloud-dev:1.0.8
       tty: true
@@ -140,6 +152,24 @@ spec:
 """
 ) {
     node(buildLabel) {
+        container(name: 'trivy', shell: '/bin/sh') {
+          stage('Scan Image Demo') {
+                 sh '''#!/bin/sh
+                    echo "ScanImageDemo Before Trivy image scanning...."
+                    trivy --exit-code 1 --severity CRITICAL python:3.4-alpine
+                    my_exit_code=$?
+                    echo "RESULT 1:--- $my_exit_code"
+                    # Check scan results
+                    if [ ${my_exit_code} == 1 ]; then
+                        echo "Image scanning failed. Some vulnerabilities found"
+                        exit 1;
+                    else
+                        echo "Image is scanned Successfully. No vulnerabilities found"
+                    fi;
+                    echo "ScanImageDemo After Trivy image scanning...."
+                '''
+            }
+        }     
         container(name: 'jdk11', shell: '/bin/bash') {
             checkout scm
             stage('Build') {
