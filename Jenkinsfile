@@ -156,7 +156,7 @@ spec:
           stage('Scan Image Demo') {
                  sh '''#!/bin/sh
                     echo "ScanImageDemo Before Trivy image scanning...."
-                    trivy --exit-code 1 --severity CRITICAL dev/ubun2:test
+                    trivy --exit-code 1 --severity CRITICAL python:3.4-alpine
                     my_exit_code=$?
                     echo "RESULT 1:--- $my_exit_code"
                     # Check scan results
@@ -240,6 +240,29 @@ spec:
                     ibmcloud cr build -t ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_VERSION} .
                 '''
             }
+        }
+       container(name: 'trivy', shell: '/bin/sh') {
+          stage('Scan Image ') {
+                 sh '''#!/bin/sh
+                    
+                    . ./env-config
+
+                    echo "ScanImage Before Trivy image scanning...."
+                    trivy --exit-code 1 --severity CRITICAL ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_VERSION}
+                    my_exit_code=$?
+                    echo "RESULT 1:--- $my_exit_code"
+                    # Check scan results
+                    if [ ${my_exit_code} == 1 ]; then
+                        echo "Image scanning failed. Some vulnerabilities found"
+                        exit 1;
+                    else
+                        echo "Image is scanned Successfully. No vulnerabilities found"
+                    fi;
+                    echo "ScanImage After Trivy image scanning...."
+                '''
+            }
+        }    
+         container(name: 'ibmcloud', shell: '/bin/bash') {
             stage('Deploy to DEV env') {
                 sh '''#!/bin/bash
                     . ./env-config
