@@ -156,7 +156,7 @@ spec:
           stage('Scan Image Demo') {
                  sh '''#!/bin/sh
                     echo "ScanImageDemo Before Trivy image scanning...."
-                    trivy --exit-code 1 --severity CRITICAL python:3.4-alpine
+                    trivy --exit-code 1 --severity CRITICAL dev/ubun2:test
                     my_exit_code=$?
                     echo "RESULT 1:--- $my_exit_code"
                     # Check scan results
